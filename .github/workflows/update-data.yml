@@ -5,7 +5,7 @@ on:
     branches: [main, fpl-vortex-review]
     paths:
       - "index.html"
-      - "assets/logo-data.txt"
+      - "assets/logo-part*.txt"
       - "scripts/**"
       - "tests/**"
       - "functions/**"
