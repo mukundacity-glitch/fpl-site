@@ -1,0 +1,111 @@
+{
+  "generated": "2026-10-04 15:08 UTC",
+  "ratings": [
+    {
+      "team": "ARS",
+      "attack": 123,
+      "defence": 170
+    },
+    {
+      "team": "MCI",
+      "attack": 142,
+      "defence": 118
+    },
+    {
+      "team": "MUN",
+      "attack": 128,
+      "defence": 107
+    },
+    {
+      "team": "BHA",
+      "attack": 125,
+      "defence": 105
+    },
+    {
+      "team": "LIV",
+      "attack": 115,
+      "defence": 112
+    },
+    {
+      "team": "BRE",
+      "attack": 118,
+      "defence": 104
+    },
+    {
+      "team": "CHE",
+      "attack": 125,
+      "defence": 95
+    },
+    {
+      "team": "BOU",
+      "attack": 112,
+      "defence": 98
+    },
+    {
+      "team": "LEE",
+      "attack": 104,
+      "defence": 103
+    },
+    {
+      "team": "NEW",
+      "attack": 105,
+      "defence": 94
+    },
+    {
+      "team": "CRY",
+      "attack": 101,
+      "defence": 95
+    },
+    {
+      "team": "EVE",
+      "attack": 93,
+      "defence": 103
+    },
+    {
+      "team": "NFO",
+      "attack": 91,
+      "defence": 103
+    },
+    {
+      "team": "FUL",
+      "attack": 95,
+      "defence": 98
+    },
+    {
+      "team": "SUN",
+      "attack": 92,
+      "defence": 100
+    },
+    {
+      "team": "AVL",
+      "attack": 94,
+      "defence": 96
+    },
+    {
+      "team": "HUL",
+      "attack": 83,
+      "defence": 106
+    },
+    {
+      "team": "IPS",
+      "attack": 108,
+      "defence": 80
+    },
+    {
+      "team": "TOT",
+      "attack": 80,
+      "defence": 98
+    },
+    {
+      "team": "COV",
+      "attack": 74,
+      "defence": 88
+    }
+  ],
+  "matches_used": 430,
+  "promoted_prior_teams": [
+    "COV",
+    "HUL",
+    "IPS"
+  ]
+}
