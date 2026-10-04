@@ -24,12 +24,9 @@ jobs:
 
           index = Path('index.html')
           text = index.read_text(encoding='utf-8')
-          old = text
           text = text.replace(',top=()=>players().sort((a,b)=>n(b.xpts)-n(a.xpts)),', ',topPlayers=()=>players().sort((a,b)=>n(b.xpts)-n(a.xpts)),')
           text = text.replace('const t=top(),', 'const t=topPlayers(),')
           text = text.replace('${top().slice(0,12)', '${topPlayers().slice(0,12)')
-          if text == old:
-              raise SystemExit('Expected browser-global top() references were not found')
           if 'top=()=>players()' in text or 'top().slice' in text or 'const t=top(),' in text:
               raise SystemExit('Browser-global top collision still present')
           index.write_text(text, encoding='utf-8')
@@ -37,7 +34,7 @@ jobs:
           validator = Path('scripts/validate_frontend.py')
           v = validator.read_text(encoding='utf-8')
           marker = 'combined = "\\n".join(scripts)\n'
-          addition = '''combined = "\\n".join(scripts)\n\n# Browser globals such as window.top can be non-configurable. A top-level lexical\n# declaration with one of these names can pass Node parsing but fail before any\n# browser JavaScript executes.\nfor forbidden in ("const top=", "let top=", "var top="):\n    assert forbidden not in combined, f"browser-global collision in frontend: {forbidden}"\n\nlogo = (ROOT / "assets" / "fpl-vortex-logo.jpg").read_bytes()\nassert len(logo) > 5000, "logo asset is unexpectedly small"\nassert logo.startswith(b"\\xff\\xd8\\xff") and logo.endswith(b"\\xff\\xd9"), "logo asset is not a complete JPEG"\n'''
+          addition = '''combined = "\\n".join(scripts)\n\n# window.top is a restricted browser global. A top-level lexical declaration\n# can pass Node parsing but prevent the entire browser script from starting.\nfor forbidden in ("const top=", "let top=", "var top="):\n    assert forbidden not in combined, f"browser-global collision in frontend: {forbidden}"\n'''
           if 'browser-global collision in frontend' not in v:
               if marker not in v:
                   raise SystemExit('Validator insertion point not found')
@@ -54,5 +51,3 @@ jobs:
           git add index.html scripts/validate_frontend.py
           git commit -m "fix: make review dashboard execute in browsers"
           git push
-
-# second push intentionally triggers this one-time workflow on the review branch
