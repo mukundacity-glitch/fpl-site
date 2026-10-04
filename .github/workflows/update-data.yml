@@ -2,10 +2,10 @@ name: Update FPL Vortex data
 
 on:
   push:
-    branches: [main, fpl-vortex-review]
+    branches: [fpl-vortex-review]
     paths:
       - "index.html"
-      - "assets/logo-part*.txt"
+      - "assets/fpl-vortex-logo.jpg"
       - "scripts/**"
       - "tests/**"
       - "functions/**"
@@ -36,9 +36,6 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Materialize brand assets
-        run: python3 scripts/materialize_assets.py
-
       - name: Validate frontend JavaScript and required UI
         run: python3 scripts/validate_frontend.py
 
@@ -68,7 +65,7 @@ jobs:
           set -euo pipefail
           git config user.name "FPL Vortex Data Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data.json data/ assets/fpl-vortex-logo.jpg
+          git add data.json data/
           if git diff --staged --quiet; then
             echo "No data changes to commit."
             exit 0
