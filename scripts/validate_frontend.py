@@ -30,6 +30,11 @@ for needle in required:
 scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", html, flags=re.S | re.I)
 assert scripts, "no inline JavaScript found"
 combined = "\n".join(scripts)
+
+# window.top is a restricted browser global. A top-level lexical declaration
+# can pass Node parsing but prevent the entire browser script from starting.
+for forbidden in ("const top=", "let top=", "var top="):
+    assert forbidden not in combined, f"browser-global collision in frontend: {forbidden}"
 with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as handle:
     handle.write(combined)
     js_path = handle.name
