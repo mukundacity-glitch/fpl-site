@@ -157,7 +157,10 @@ def chip_radar() -> list[dict[str, Any]]:
         windows.append({"gw": first_gw + offset, "blanks": blanks, "doubles": doubles, "avg": average, "easy_teams": easy_teams, "best_attack_fdr": best_attack[0], "best_attack_team": best_attack[1]})
     if not windows:
         return []
-    free_hit = max(windows, key=lambda window: window["blanks"] * 3 + window["doubles"] * 2 + window["easy_teams"] * 0.35)
+    free_hit_windows = [window for window in windows if window["gw"] != 1]
+    if not free_hit_windows:
+        free_hit_windows = windows
+    free_hit = max(free_hit_windows, key=lambda window: window["blanks"] * 3 + window["doubles"] * 2 + window["easy_teams"] * 0.35)
     bench_boost = max(windows, key=lambda window: window["doubles"] * 4 + window["easy_teams"] * 0.4 + max(0.0, 3.2 - window["avg"]))
     triple_captain = max(windows, key=lambda window: (2 if window["doubles"] else 0) + (6 - window["best_attack_fdr"]) + window["easy_teams"] * 0.12)
     wildcard_candidates: list[tuple[float, int, int]] = []
@@ -214,7 +217,7 @@ output = {
     "xpts_source": "Official FPL ep_next for the next GW; transparent Vortex fixture-adjusted projection for later GWs",
     "fdr_name": "Vortex FDR", "fdr_scale": vm.SCALE,
     "projection_method": {"next_gw": "official FPL ep_next", "future_gws": "55% ep_next + 30% form + 15% points-per-game, adjusted by Vortex position-specific FDR and availability", "fdr_multipliers": FDR_MULTIPLIER},
-    "chip_rules": {"season": "2026/27", "chips": ["Wildcard", "Free Hit", "Bench Boost", "Triple Captain"], "sets": 2, "first_set_expires_after_gw": 19, "second_set_starts_gw": 20, "one_chip_per_gameweek": True},
+    "chip_rules": {"season": "2026/27", "chips": ["Wildcard", "Free Hit", "Bench Boost", "Triple Captain"], "sets": 2, "first_set_expires_after_gw": 19, "second_set_starts_gw": 20, "one_chip_per_gameweek": True, "wildcard_not_allowed_gw1": True, "free_hit_not_allowed_gw1": True, "free_hit_not_consecutive": True},
     "ratings": ratings, "teams": teams_out, "players": players, "chips": chip_radar(), "accuracy": accuracy,
     "automation": {"price_snapshots": price_signals.get("samples", 0) if isinstance(price_signals, dict) else 0, "price_signal_generated": price_signals.get("generated") if isinstance(price_signals, dict) else None},
     "quality": {"players": len(players), "teams": len(teams), "matches_used": len(matches), "official_api_available": isinstance(boot, dict) and bool(boot.get("elements")), "official_fixtures_available": isinstance(fixt, list), "projection_horizon": HORIZON, "promoted_prior_teams": [code2short.get(code, code) for code in promoted]},

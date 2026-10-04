@@ -105,6 +105,9 @@ assert chips.get("sets") == 2
 assert chips.get("first_set_expires_after_gw") == 19
 assert chips.get("second_set_starts_gw") == 20
 assert chips.get("one_chip_per_gameweek") is True
+assert chips.get("wildcard_not_allowed_gw1") is True
+assert chips.get("free_hit_not_allowed_gw1") is True
+assert chips.get("free_hit_not_consecutive") is True
 
 print(
     f"validated: {len(players)} players, {len(teams)} teams, "

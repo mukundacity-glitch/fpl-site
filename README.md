@@ -28,6 +28,8 @@ The planner follows the official 2026/27 structure:
 - First-half chips expire after GW19; unused chips do not carry over.
 - Second set starts in GW20.
 - Only one chip can be played in a Gameweek.
+- Wildcard and Free Hit cannot be played in Gameweek 1.
+- Free Hit cannot be played in consecutive Gameweeks; using the first Free Hit in GW19 blocks the second in GW20.
 
 Official reference: <https://www.premierleague.com/en/news/4679879/whats-happening-with-fpl-chips-in-202627>
 
