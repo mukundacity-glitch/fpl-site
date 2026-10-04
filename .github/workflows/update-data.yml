@@ -1,0 +1,70 @@
+name: Update FPL Vortex data
+
+on:
+  push:
+    branches: [main, fpl-vortex-review]
+    paths:
+      - "index.html"
+      - "scripts/**"
+      - "tests/**"
+      - "functions/**"
+      - ".github/workflows/update-data.yml"
+      - "README.md"
+      - "DATA_SOURCES.md"
+  schedule:
+    - cron: "17 2,8,14,20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fpl-vortex-data-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test Vortex model
+        run: python3 -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Fetch official FPL data
+        run: python3 scripts/fetch_fpl_api.py
+
+      - name: Refresh owned source data
+        run: python3 scripts/update_data.py
+
+      - name: Collect price-pressure history
+        run: python3 scripts/collect_price_history.py
+
+      - name: Update prediction accuracy history
+        run: python3 scripts/collect_accuracy.py
+
+      - name: Build website dataset
+        run: python3 scripts/build_data_json.py
+
+      - name: Validate generated dataset
+        run: python3 scripts/validate_data.py
+
+      - name: Commit refreshed data
+        run: |
+          set -euo pipefail
+          git config user.name "FPL Vortex Data Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data.json data/
+          if git diff --staged --quiet; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(data): refresh FPL Vortex data"
+          git push
