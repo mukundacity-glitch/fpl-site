@@ -7,7 +7,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
-parts = [ASSETS / f"logo-part{index}.txt" for index in range(1, 5)]
+parts = [
+    ASSETS / "logo-part1a.txt",
+    ASSETS / "logo-part1b.txt",
+    ASSETS / "logo-part2.txt",
+    ASSETS / "logo-part3.txt",
+    ASSETS / "logo-part4.txt",
+]
 for part in parts:
     if not part.exists():
         raise RuntimeError(f"Missing logo source chunk: {part.name}")
