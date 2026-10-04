@@ -35,16 +35,19 @@ Official reference: <https://www.premierleague.com/en/news/4679879/whats-happeni
 
 ## Automation
 
-`.github/workflows/update-data.yml` runs four times per day and can be run manually. Each run:
+`.github/workflows/update-data.yml` is configured for four refresh windows per day and can also be run manually. While this project is intentionally kept on the `fpl-vortex-review` staging branch, pushes to that branch run the full validation/update pipeline. GitHub scheduled workflows run from the repository default branch, so the four-times-daily schedule becomes active only after you approve moving the reviewed site to `main`.
 
-1. unit-tests the Vortex team model;
-2. fetches and validates official FPL bootstrap, fixtures and recent live-GW data;
-3. refreshes/bootstrap historical match inputs;
-4. stores a price-pressure snapshot;
-5. stores/evaluates prediction history;
-6. rebuilds `data.json`;
-7. validates structure, team/player counts, projection ranges and FDR values;
-8. commits only refreshed data.
+Each run:
+
+1. validates browser and manager-proxy JavaScript;
+2. unit-tests the Vortex team model;
+3. fetches and validates official FPL bootstrap, fixtures and recent live-GW data;
+4. refreshes/bootstrap historical match inputs;
+5. stores a price-pressure snapshot;
+6. stores/evaluates prediction history;
+7. rebuilds `data.json`;
+8. validates source provenance, timestamps, team/player counts, projection totals, FDR ranges and chip rules;
+9. commits only refreshed data.
 
 The workflow itself does **not** publish or deploy the website.
 
@@ -60,7 +63,7 @@ The public Chip Planner provides league-level radar windows. **My Team Lab** add
 
 - Bench Boost: projected bench points by Gameweek.
 - Triple Captain: extra points above normal captaincy.
-- Free Hit: beam-search squad optimization for each tracked Gameweek under budget, squad-shape and max-three-per-club constraints.
+- Free Hit: beam-search squad optimization for each tracked Gameweek under budget, squad-shape and max-three-per-club constraints, while enforcing Free Hit availability rules.
 - Wildcard: multi-Gameweek optimized squad comparison versus holding the current squad.
 
 These are projection-model simulations, not guarantees.
