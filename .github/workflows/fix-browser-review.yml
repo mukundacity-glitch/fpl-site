@@ -54,3 +54,5 @@ jobs:
           git add index.html scripts/validate_frontend.py
           git commit -m "fix: make review dashboard execute in browsers"
           git push
+
+# second push intentionally triggers this one-time workflow on the review branch
