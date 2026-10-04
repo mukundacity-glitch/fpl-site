@@ -5,7 +5,7 @@ on:
     branches: [main, fpl-vortex-review]
     paths:
       - "index.html"
-      - "assets/**"
+      - "assets/logo-data.txt"
       - "scripts/**"
       - "tests/**"
       - "functions/**"
@@ -38,6 +38,9 @@ jobs:
 
       - name: Materialize brand assets
         run: python3 scripts/materialize_assets.py
+
+      - name: Validate frontend JavaScript and required UI
+        run: python3 scripts/validate_frontend.py
 
       - name: Test Vortex model
         run: python3 -m unittest discover -s tests -p "test_*.py" -v
