@@ -1,0 +1,56 @@
+name: Fix browser review
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths:
+      - .github/workflows/fix-browser-review.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fix browser-global collision and strengthen validation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+          old = text
+          text = text.replace(',top=()=>players().sort((a,b)=>n(b.xpts)-n(a.xpts)),', ',topPlayers=()=>players().sort((a,b)=>n(b.xpts)-n(a.xpts)),')
+          text = text.replace('const t=top(),', 'const t=topPlayers(),')
+          text = text.replace('${top().slice(0,12)', '${topPlayers().slice(0,12)')
+          if text == old:
+              raise SystemExit('Expected browser-global top() references were not found')
+          if 'top=()=>players()' in text or 'top().slice' in text or 'const t=top(),' in text:
+              raise SystemExit('Browser-global top collision still present')
+          index.write_text(text, encoding='utf-8')
+
+          validator = Path('scripts/validate_frontend.py')
+          v = validator.read_text(encoding='utf-8')
+          marker = 'combined = "\\n".join(scripts)\n'
+          addition = '''combined = "\\n".join(scripts)\n\n# Browser globals such as window.top can be non-configurable. A top-level lexical\n# declaration with one of these names can pass Node parsing but fail before any\n# browser JavaScript executes.\nfor forbidden in ("const top=", "let top=", "var top="):\n    assert forbidden not in combined, f"browser-global collision in frontend: {forbidden}"\n\nlogo = (ROOT / "assets" / "fpl-vortex-logo.jpg").read_bytes()\nassert len(logo) > 5000, "logo asset is unexpectedly small"\nassert logo.startswith(b"\\xff\\xd8\\xff") and logo.endswith(b"\\xff\\xd9"), "logo asset is not a complete JPEG"\n'''
+          if 'browser-global collision in frontend' not in v:
+              if marker not in v:
+                  raise SystemExit('Validator insertion point not found')
+              v = v.replace(marker, addition)
+              validator.write_text(v, encoding='utf-8')
+          PY
+      - name: Validate frontend
+        run: python3 scripts/validate_frontend.py
+      - name: Commit fix and remove one-time workflow
+        run: |
+          git config user.name "FPL Vortex Setup Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/fix-browser-review.yml
+          git add index.html scripts/validate_frontend.py
+          git commit -m "fix: make review dashboard execute in browsers"
+          git push
