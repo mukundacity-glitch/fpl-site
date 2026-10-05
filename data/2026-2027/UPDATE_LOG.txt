@@ -1,4 +1,4 @@
-2026-10-04 22:09 UTC
+2026-10-05 21:31 UTC
 ok       players.csv (667 rows)
 ok       playerstats.csv (3250 rows)
 ok       teams.csv (20 rows)
