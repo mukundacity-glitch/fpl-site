@@ -1,0 +1,54 @@
+name: Add visual data fields
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths:
+      - .github/workflows/add-visual-data-fields.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add player photo and club badge codes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build_data_json.py')
+          s=p.read_text(encoding='utf-8')
+          old='teams_out.append({"team": team["short"], "name": team["name"], "fixtures": team_fx[team["code"]], "avg": round(sum(fixture["fdr_all"] for fixture in flat) / len(flat), 2) if flat else None})'
+          new='teams_out.append({"team": team["short"], "name": team["name"], "code": team["code"], "fixtures": team_fx[team["code"]], "avg": round(sum(fixture["fdr_all"] for fixture in flat) / len(flat), 2) if flat else None})'
+          if old not in s:
+              raise SystemExit('team output marker not found')
+          s=s.replace(old,new)
+          old='"team": code2short.get(team_code, "?"), "team_id": int(element.get("team") or 0), "pos": position'
+          new='"team": code2short.get(team_code, "?"), "team_id": int(element.get("team") or 0), "team_code": team_code, "photo_code": str(element.get("photo") or element.get("code") or "").split(".")[0], "pos": position'
+          if old not in s:
+              raise SystemExit('official player marker not found')
+          s=s.replace(old,new)
+          old='"team": code2short.get(team_code, "?"), "team_id": int(float(meta.get("team_id") or 0)) if meta.get("team_id") else 0, "pos": position'
+          new='"team": code2short.get(team_code, "?"), "team_id": int(float(meta.get("team_id") or 0)) if meta.get("team_id") else 0, "team_code": team_code, "photo_code": str(meta.get("photo") or meta.get("code") or "").split(".")[0], "pos": position'
+          if old not in s:
+              raise SystemExit('fallback player marker not found')
+          s=s.replace(old,new)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate Python and frontend
+        run: |
+          python3 -m py_compile scripts/build_data_json.py
+          python3 scripts/validate_frontend.py
+      - name: Commit patch and remove one-time workflow
+        run: |
+          git config user.name "FPL Vortex Visual Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/add-visual-data-fields.yml
+          git add scripts/build_data_json.py
+          git commit -m "feat: add player photo and club badge metadata"
+          git push
