@@ -184,8 +184,6 @@ players: list[dict[str, Any]] = []
 if isinstance(boot, dict) and boot.get("elements"):
     source = "official_fpl_api"
     for element in boot["elements"]:
-        if num(element.get("minutes")) <= 0 and num(element.get("ep_next")) <= 0:
-            continue
         position = POS_API.get(element.get("element_type"), "?")
         team_code = id2code.get(str(element.get("team")), "")
         ep_next, form, ppg = num(element.get("ep_next")), num(element.get("form")), num(element.get("points_per_game"))
