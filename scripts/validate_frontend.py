@@ -12,6 +12,8 @@ html = (ROOT / "index.html").read_text(encoding="utf-8")
 
 required = [
     "assets/fpl-vortex-logo.jpg",
+    "assets/expected-minutes.js",
+    "Expected Minutes",
     "Fixtures",
     "Team Planner",
     "Price Changes",
