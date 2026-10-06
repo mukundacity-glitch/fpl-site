@@ -1,0 +1,39 @@
+/* Shared FPL VORTEX player-photo treatment. Keeps heads/faces inside every card. */
+img[data-vx-player-photo="1"]{
+  object-fit:contain !important;
+  object-position:center bottom !important;
+  max-width:100% !important;
+  max-height:100% !important;
+}
+.vx-player-fallback{
+  width:100%;
+  height:100%;
+  min-width:32px;
+  min-height:32px;
+  display:grid;
+  place-items:center;
+  border-radius:inherit;
+  background:linear-gradient(145deg,#eef7fa,#dcecf1);
+  color:#345a68;
+  font:800 .72rem/1 "Plus Jakarta Sans",Inter,system-ui,sans-serif;
+  letter-spacing:.02em;
+}
+.avatar,.player-thumb,.premium-thumb,.premium-photo-box,.mtp-photo,.mtp-card-player .pic,.v4-photo,.v4-thumb{
+  position:relative;
+}
+.avatar img[data-vx-player-photo="1"],
+.player-thumb img[data-vx-player-photo="1"],
+.premium-thumb img[data-vx-player-photo="1"],
+.premium-photo-box img[data-vx-player-photo="1"],
+.mtp-photo img[data-vx-player-photo="1"],
+.mtp-card-player .pic img[data-vx-player-photo="1"]{
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  align-self:flex-end;
+}
+/* Pitch cards need a little breathing room above the head rather than clipping at the top. */
+.premium-photo-box,.pitch-img-wrap,.mtp-card-player .pic{
+  padding-top:3px;
+}
