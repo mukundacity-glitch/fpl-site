@@ -27,8 +27,11 @@ jobs:
           s=p.read_text(encoding='utf-8')
           css='<link rel="stylesheet" href="assets/expected-minutes.css">'
           js='<script src="assets/expected-minutes.js"></script>'
+          marker='<!-- Expected Minutes -->'
           if css not in s:
-              s=s.replace('<link rel="stylesheet" href="assets/dashboard-premium.css">', '<link rel="stylesheet" href="assets/dashboard-premium.css">\n'+css)
+              s=s.replace('<link rel="stylesheet" href="assets/dashboard-premium.css">', '<link rel="stylesheet" href="assets/dashboard-premium.css">\n'+css+'\n'+marker)
+          elif marker not in s:
+              s=s.replace(css, css+'\n'+marker)
           if js not in s:
               s=s.replace('<script src="assets/dashboard-premium.js"></script>', '<script src="assets/dashboard-premium.js"></script>\n'+js)
           s=s.replace('Use Wrangler for this feature', 'Local review API enabled')
