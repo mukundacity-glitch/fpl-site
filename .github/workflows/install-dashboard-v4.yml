@@ -1,0 +1,49 @@
+name: Install Dashboard v4 polish
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths:
+      - ".github/workflows/install-dashboard-v4.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fpl-vortex-review
+      - name: Install v4 assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          css='<link rel="stylesheet" href="assets/dashboard-v4.css">'
+          js='<script src="assets/dashboard-v4.js"></script>'
+          if css not in s:
+              s=s.replace('<link rel="stylesheet" href="assets/expected-minutes.css">', '<link rel="stylesheet" href="assets/expected-minutes.css">\n'+css)
+          if js not in s:
+              s=s.replace('<script src="assets/expected-minutes.js"></script>', '<script src="assets/expected-minutes.js"></script>\n'+js)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate frontend
+        run: |
+          python3 scripts/validate_frontend.py
+          node --check assets/dashboard-premium.js
+          node --check assets/dashboard-v4.js
+          node --check assets/expected-minutes.js
+          grep -q 'assets/dashboard-v4.css' index.html
+          grep -q 'assets/dashboard-v4.js' index.html
+      - name: Commit install
+        run: |
+          set -euo pipefail
+          rm .github/workflows/install-dashboard-v4.yml
+          git config user.name "FPL Vortex Design Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html .github/workflows/install-dashboard-v4.yml
+          git commit -m "feat: dashboard all-player explorer and visual polish"
+          git push
