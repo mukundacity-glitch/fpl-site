@@ -8,7 +8,7 @@
 <title>FPL Vortex</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 
 :root{
@@ -32,6 +32,7 @@
 @media(max-width:480px){.brand-logo{width:180px;height:48px}.my-team-btn{padding:9px 13px;font-size:.75rem}.product-tab{padding:9px 10px}.pitch-player{width:64px}.pitch-name{font-size:.55rem}.fixture-row{grid-template-columns:1fr 24px 48px 24px 1fr}.club-badge{width:24px;height:24px}.rank-row{grid-template-columns:22px 38px 1fr 78px}.player-thumb{width:36px;height:36px}.player-thumb img{width:38px;height:38px}.transfer-row{grid-template-columns:38px 1fr 62px 60px}.injury-row{grid-template-columns:38px 1fr 18px}}
 
 </style>
+<link rel="stylesheet" href="assets/dashboard-premium.css">
 </head>
 <body>
 <div class="app">
@@ -132,5 +133,6 @@ function render(){if(!D)return;$('tabs').innerHTML=TABS.map(([k,l,icon,badge])=>
 async function load(){try{const r=await fetch(`data.json?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);D=await r.json();$('footerUpdated').textContent=`Updated ${D.generated||'unknown'}`;const age=Date.now()-new Date(D.generated_iso).getTime();if(age>36*36e5)$('notice').innerHTML=`<div class="notice">Dataset is older than 36 hours. Last-known-good data is preserved automatically; check the latest data refresh if this persists.</div>`;render()}catch(err){$('view').innerHTML=`<div class="empty"><b>Could not load data.json.</b><br><br>${e(err.message||'Unknown error')}</div>`}}
 load();
 </script>
+<script src="assets/dashboard-premium.js"></script>
 </body>
 </html>

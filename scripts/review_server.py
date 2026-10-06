@@ -89,6 +89,7 @@ class ReviewHandler(SimpleHTTPRequestHandler):
                 current_gw = int(summary.get("current_event") or 1)
 
             picks = fetch_json(f"/entry/{entry}/event/{current_gw}/picks/")
+            live = fetch_json(f"/event/{current_gw}/live/")
             self.send_json(
                 {
                     "entry": int(entry),
@@ -96,6 +97,7 @@ class ReviewHandler(SimpleHTTPRequestHandler):
                     "summary": summary,
                     "history": history,
                     "picks": picks,
+                    "live": live,
                 }
             )
         except Exception as exc:  # keep local review response aligned with hosted API

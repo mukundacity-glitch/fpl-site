@@ -90,6 +90,7 @@ if isinstance(boot, dict) and boot.get("events"):
     for event in boot["events"]:
         if first_gw <= int(event["id"]) < first_gw + HORIZON:
             events.append({"gw": int(event["id"]), "name": event.get("name") or f"Gameweek {event['id']}", "deadline": event.get("deadline_time"), "finished": bool(event.get("finished"))})
+            events[-1].update({"average_entry_score": event.get("average_entry_score"), "highest_score": event.get("highest_score")})
 else:
     gw = core_gw
     first_gw = gw + 1
@@ -108,6 +109,7 @@ if isinstance(fixt, list):
         for team, opponent, is_home in ((home, away, True), (away, home, False)):
             difficulty = vm.fixture_difficulty(model, reference, team, opponent, is_home)
             difficulty.update({"opp": code2short[opponent], "h": is_home, "fdr": difficulty["fdr_all"], "event": int(event)})
+            difficulty["kickoff"] = fixture.get("kickoff_time")
             team_fx[team][int(event) - first_gw].append(difficulty)
 
 teams_out: list[dict[str, Any]] = []
@@ -190,7 +192,8 @@ if isinstance(boot, dict) and boot.get("elements"):
         chance_value = element.get("chance_of_playing_next_round")
         chance = num(chance_value, None) if chance_value is not None else None
         projections = projections_for(team_code, position, ep_next, form, ppg, chance)
-        players.append({"id": int(element["id"]), "name": element.get("web_name") or "Unknown", "team": code2short.get(team_code, "?"), "team_id": int(element.get("team") or 0), "team_code": team_code, "photo_code": str(element.get("photo") or element.get("code") or "").split(".")[0], "pos": position, "price": num(element.get("now_cost")) / 10.0, "own": num(element.get("selected_by_percent")), "form": form, "ppg": ppg, "xpts": ep_next, "projection_total": round(sum(item["xpts"] for item in projections), 2), "projections": projections, "net": int(num(element.get("transfers_in_event")) - num(element.get("transfers_out_event"))), "status": element.get("status") or "u", "chance": chance, "news": element.get("news") or "", "fixtures": fixtures_for(team_code, position), "price_signal": price_by_id.get(str(element["id"]))})
+        players.append({"id": int(element["id"]), "name": element.get("web_name") or "Unknown", "team": code2short.get(team_code, "?"), "team_id": int(element.get("team") or 0), "team_code": team_code, "photo_code": str(element.get("code") or element.get("photo") or "").split(".")[0], "pos": position, "price": num(element.get("now_cost")) / 10.0, "own": num(element.get("selected_by_percent")), "form": form, "ppg": ppg, "xpts": ep_next, "projection_total": round(sum(item["xpts"] for item in projections), 2), "projections": projections, "net": int(num(element.get("transfers_in_event")) - num(element.get("transfers_out_event"))), "status": element.get("status") or "u", "chance": chance, "news": element.get("news") or "", "fixtures": fixtures_for(team_code, position), "price_signal": price_by_id.get(str(element["id"]))})
+        players[-1].update({"total_points": int(num(element.get("total_points"))), "minutes": int(num(element.get("minutes"))), "starts": int(num(element.get("starts"))), "goals_scored": int(num(element.get("goals_scored"))), "assists": int(num(element.get("assists"))), "clean_sheets": int(num(element.get("clean_sheets"))), "bonus": int(num(element.get("bonus"))), "transfers_in": int(num(element.get("transfers_in_event"))), "transfers_out": int(num(element.get("transfers_out_event")))})
 else:
     source = "validated_core_csv_fallback"
     player_meta = {player["player_id"]: player for player in read_csv(os.path.join(CORE_DIR, "players.csv"))}
@@ -205,7 +208,8 @@ else:
         chance_value = stat.get("chance_of_playing_next_round")
         chance = num(chance_value, None) if chance_value not in (None, "") else None
         projections = projections_for(team_code, position, ep_next, form, ppg, chance)
-        players.append({"id": int(float(stat["id"])), "name": meta.get("web_name") or "Unknown", "team": code2short.get(team_code, "?"), "team_id": int(float(meta.get("team_id") or 0)) if meta.get("team_id") else 0, "team_code": team_code, "photo_code": str(meta.get("photo") or meta.get("code") or "").split(".")[0], "pos": position, "price": num(stat.get("now_cost")), "own": num(stat.get("selected_by_percent")), "form": form, "ppg": ppg, "xpts": ep_next, "projection_total": round(sum(item["xpts"] for item in projections), 2), "projections": projections, "net": int(num(stat.get("transfers_in_event")) - num(stat.get("transfers_out_event"))), "status": stat.get("status") or "u", "chance": chance, "news": stat.get("news") or "", "fixtures": fixtures_for(team_code, position), "price_signal": price_by_id.get(str(stat["id"]))})
+        players.append({"id": int(float(stat["id"])), "name": meta.get("web_name") or "Unknown", "team": code2short.get(team_code, "?"), "team_id": int(float(meta.get("team_id") or 0)) if meta.get("team_id") else 0, "team_code": team_code, "photo_code": str(meta.get("player_code") or meta.get("code") or meta.get("photo") or "").split(".")[0], "pos": position, "price": num(stat.get("now_cost")), "own": num(stat.get("selected_by_percent")), "form": form, "ppg": ppg, "xpts": ep_next, "projection_total": round(sum(item["xpts"] for item in projections), 2), "projections": projections, "net": int(num(stat.get("transfers_in_event")) - num(stat.get("transfers_out_event"))), "status": stat.get("status") or "u", "chance": chance, "news": stat.get("news") or "", "fixtures": fixtures_for(team_code, position), "price_signal": price_by_id.get(str(stat["id"]))})
+        players[-1].update({"total_points": int(num(stat.get("total_points"))), "minutes": int(num(stat.get("minutes"))), "starts": int(num(stat.get("starts"))), "goals_scored": int(num(stat.get("goals_scored"))), "assists": int(num(stat.get("assists"))), "clean_sheets": int(num(stat.get("clean_sheets"))), "bonus": int(num(stat.get("bonus"))), "transfers_in": int(num(stat.get("transfers_in_event"))), "transfers_out": int(num(stat.get("transfers_out_event")))})
 
 players.sort(key=lambda row: (-row["xpts"], -row["projection_total"], row["price"]))
 fixture_source = "official_fpl_api" if isinstance(fixt, list) else "missing_until_api_refresh"

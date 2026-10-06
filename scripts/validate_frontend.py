@@ -27,6 +27,8 @@ required = [
     "Model accuracy",
     "Data quality",
     "data.json",
+    "assets/dashboard-premium.css",
+    "assets/dashboard-premium.js",
     "playerPhoto",
     "clubBadge",
 ]
@@ -44,6 +46,7 @@ with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=Fal
 try:
     subprocess.run(["node", "--check", js_path], check=True)
     subprocess.run(["node", "--check", str(ROOT / "functions" / "api" / "manager.js")], check=True)
+    subprocess.run(["node", "--check", str(ROOT / "assets" / "dashboard-premium.js")], check=True)
 finally:
     Path(js_path).unlink(missing_ok=True)
 print("frontend validated: premium dashboard, navigation, image helpers and browser JavaScript parse cleanly")

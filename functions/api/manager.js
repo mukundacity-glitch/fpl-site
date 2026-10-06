@@ -28,8 +28,9 @@ export async function onRequestGet(context) {
     const requestedGw = Number(requestUrl.searchParams.get("gw"));
     const currentGw = Number.isInteger(requestedGw) && requestedGw > 0 ? requestedGw : Number(summary.current_event || 1);
     const picks = await fetchFpl(`/entry/${entry}/event/${currentGw}/picks/`);
+    const live = await fetchFpl(`/event/${currentGw}/live/`);
 
-    return new Response(JSON.stringify({ entry: Number(entry), gw: currentGw, summary, history, picks }), {
+    return new Response(JSON.stringify({ entry: Number(entry), gw: currentGw, summary, history, picks, live }), {
       status: 200,
       headers: JSON_HEADERS,
     });
