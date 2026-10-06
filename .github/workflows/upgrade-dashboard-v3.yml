@@ -1,0 +1,106 @@
+name: Upgrade premium dashboard v3
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths: [".github/workflows/upgrade-dashboard-v3.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fpl-vortex-review
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply premium dashboard and data metadata
+        env:
+          CSS_Z: "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"
+          JS_Z: "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"
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import base64, os, zlib
+
+          root=Path('.')
+          assets=root/'assets'
+          assets.mkdir(exist_ok=True)
+          (assets/'dashboard-premium.css').write_bytes(zlib.decompress(base64.b64decode(os.environ['CSS_Z'])))
+          (assets/'dashboard-premium.js').write_bytes(zlib.decompress(base64.b64decode(os.environ['JS_Z'])))
+
+          p=root/'index.html'
+          s=p.read_text(encoding='utf-8')
+          if 'assets/dashboard-premium.css' not in s:
+              s=s.replace('</head>', '<link rel="stylesheet" href="assets/dashboard-premium.css">\n</head>')
+          if 'assets/dashboard-premium.js' not in s:
+              s=s.replace('</body>', '<script src="assets/dashboard-premium.js"></script>\n</body>')
+          s=s.replace('family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap', 'family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap')
+          p.write_text(s, encoding='utf-8')
+
+          p=root/'scripts/build_data_json.py'
+          s=p.read_text(encoding='utf-8')
+          event_line='            events.append({"gw": int(event["id"]), "name": event.get("name") or f"Gameweek {event[\'id\']}", "deadline": event.get("deadline_time"), "finished": bool(event.get("finished"))})'
+          if event_line in s and 'events[-1].update({"average_entry_score"' not in s:
+              s=s.replace(event_line, event_line+'\n            events[-1].update({"average_entry_score": event.get("average_entry_score"), "highest_score": event.get("highest_score")})')
+          diff_line='            difficulty.update({"opp": code2short[opponent], "h": is_home, "fdr": difficulty["fdr_all"], "event": int(event)})'
+          if diff_line in s and 'difficulty["kickoff"]' not in s:
+              s=s.replace(diff_line, diff_line+'\n            difficulty["kickoff"] = fixture.get("kickoff_time")')
+          team_line='    teams_out.append({"team": team["short"], "name": team["name"], "fixtures": team_fx[team["code"]], "avg": round(sum(fixture["fdr_all"] for fixture in flat) / len(flat), 2) if flat else None})'
+          if team_line in s and 'teams_out[-1].update({"id"' not in s:
+              s=s.replace(team_line, team_line+'\n    teams_out[-1].update({"id": int(team["id"]), "code": team["code"]})')
+          s=s.replace('"photo_code": str(element.get("photo") or element.get("code") or "").split(".")[0]', '"photo_code": str(element.get("code") or element.get("photo") or "").split(".")[0]')
+          s=s.replace('"photo_code": str(meta.get("photo") or meta.get("code") or "").split(".")[0]', '"photo_code": str(meta.get("player_code") or meta.get("code") or meta.get("photo") or "").split(".")[0]')
+          lines=s.splitlines()
+          out=[]
+          for line in lines:
+              out.append(line)
+              if 'players.append({"id": int(element["id"])' in line and 'players[-1].update({"total_points": int(num(element.get("total_points")))' not in s:
+                  out.append('        players[-1].update({"total_points": int(num(element.get("total_points"))), "minutes": int(num(element.get("minutes"))), "starts": int(num(element.get("starts"))), "goals_scored": int(num(element.get("goals_scored"))), "assists": int(num(element.get("assists"))), "clean_sheets": int(num(element.get("clean_sheets"))), "bonus": int(num(element.get("bonus"))), "transfers_in": int(num(element.get("transfers_in_event"))), "transfers_out": int(num(element.get("transfers_out_event")))})')
+              if 'players.append({"id": int(float(stat["id"]))' in line and 'players[-1].update({"total_points": int(num(stat.get("total_points")))' not in s:
+                  out.append('        players[-1].update({"total_points": int(num(stat.get("total_points"))), "minutes": int(num(stat.get("minutes"))), "starts": int(num(stat.get("starts"))), "goals_scored": int(num(stat.get("goals_scored"))), "assists": int(num(stat.get("assists"))), "clean_sheets": int(num(stat.get("clean_sheets"))), "bonus": int(num(stat.get("bonus"))), "transfers_in": int(num(stat.get("transfers_in_event"))), "transfers_out": int(num(stat.get("transfers_out_event")))})')
+          p.write_text('\n'.join(out)+'\n', encoding='utf-8')
+
+          p=root/'functions/api/manager.js'
+          s=p.read_text(encoding='utf-8')
+          needle='    const picks = await fetchFpl(`/entry/${entry}/event/${currentGw}/picks/`);'
+          if needle in s and 'const live = await fetchFpl' not in s:
+              s=s.replace(needle, needle+'\n    const live = await fetchFpl(`/event/${currentGw}/live/`);')
+              s=s.replace('JSON.stringify({ entry: Number(entry), gw: currentGw, summary, history, picks })','JSON.stringify({ entry: Number(entry), gw: currentGw, summary, history, picks, live })')
+          p.write_text(s, encoding='utf-8')
+
+          p=root/'scripts/review_server.py'
+          s=p.read_text(encoding='utf-8')
+          needle='            picks = fetch_json(f"/entry/{entry}/event/{current_gw}/picks/")'
+          if needle in s and 'live = fetch_json' not in s:
+              s=s.replace(needle, needle+'\n            live = fetch_json(f"/event/{current_gw}/live/")')
+              s=s.replace('                    "picks": picks,\n','                    "picks": picks,\n                    "live": live,\n')
+          p.write_text(s, encoding='utf-8')
+
+          p=root/'scripts/validate_frontend.py'
+          s=p.read_text(encoding='utf-8')
+          if 'assets/dashboard-premium.css' not in s:
+              s=s.replace('    "data.json",\n','    "data.json",\n    "assets/dashboard-premium.css",\n    "assets/dashboard-premium.js",\n')
+          if 'ROOT / "assets" / "dashboard-premium.js"' not in s:
+              s=s.replace('    subprocess.run(["node", "--check", str(ROOT / "functions" / "api" / "manager.js")], check=True)','    subprocess.run(["node", "--check", str(ROOT / "functions" / "api" / "manager.js")], check=True)\n    subprocess.run(["node", "--check", str(ROOT / "assets" / "dashboard-premium.js")], check=True)')
+          p.write_text(s, encoding='utf-8')
+          PYCODE
+      - name: Validate premium frontend
+        run: |
+          python3 scripts/validate_frontend.py
+          python3 -m py_compile scripts/review_server.py scripts/build_data_json.py
+          python3 scripts/build_data_json.py
+          python3 scripts/validate_data.py
+      - name: Commit upgrade
+        run: |
+          set -euo pipefail
+          rm .github/workflows/upgrade-dashboard-v3.yml
+          git config user.name "FPL Vortex Design Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html assets/dashboard-premium.css assets/dashboard-premium.js scripts/build_data_json.py scripts/review_server.py scripts/validate_frontend.py functions/api/manager.js data.json .github/workflows/upgrade-dashboard-v3.yml
+          git commit -m "feat: premium live dashboard with player images and model panels"
+          git push
