@@ -1,0 +1,59 @@
+name: Install Expected Minutes tab
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths:
+      - ".github/workflows/install-expected-minutes.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fpl-vortex-review
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Patch review frontend
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          css='<link rel="stylesheet" href="assets/expected-minutes.css">'
+          js='<script src="assets/expected-minutes.js"></script>'
+          if css not in s:
+              s=s.replace('<link rel="stylesheet" href="assets/dashboard-premium.css">', '<link rel="stylesheet" href="assets/dashboard-premium.css">\n'+css)
+          if js not in s:
+              s=s.replace('<script src="assets/dashboard-premium.js"></script>', '<script src="assets/dashboard-premium.js"></script>\n'+js)
+          s=s.replace('Use Wrangler for this feature', 'Local review API enabled')
+          s=s.replace('The current Python preview cannot execute the manager API function. The visual layout can still be reviewed here.', 'Run python3 scripts/review_server.py so My Team Lab can load your public FPL squad locally without deployment.')
+          p.write_text(s,encoding='utf-8')
+          v=Path('scripts/validate_frontend.py')
+          t=v.read_text(encoding='utf-8')
+          if 'assets/expected-minutes.js' not in t:
+              t=t.replace('"assets/fpl-vortex-logo.jpg",', '"assets/fpl-vortex-logo.jpg",\n    "assets/expected-minutes.js",\n    "Expected Minutes",')
+              v.write_text(t,encoding='utf-8')
+          PY
+      - name: Validate frontend
+        run: |
+          python3 scripts/validate_frontend.py
+          node --check assets/expected-minutes.js
+      - name: Commit install
+        run: |
+          set -euo pipefail
+          rm .github/workflows/install-expected-minutes.yml
+          git config user.name "FPL Vortex Design Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html scripts/validate_frontend.py .github/workflows/install-expected-minutes.yml
+          if git diff --staged --quiet; then
+            echo "No install changes"
+            exit 0
+          fi
+          git commit -m "feat: add Dashboard and Expected Minutes navigation"
+          git push
