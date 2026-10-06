@@ -8,7 +8,7 @@ const pvMoney=v=>`£${pvNum(v).toFixed(1)}m`;
 const pvCompact=v=>{const x=pvNum(v);if(Math.abs(x)>=1e6)return`${(x/1e6).toFixed(x>=1e7?1:2)}m`;if(Math.abs(x)>=1e3)return`${(x/1e3).toFixed(x>=1e5?0:1)}k`;return Math.round(x).toString()};
 const pvInitials=name=>String(name||"?").split(/[\s.-]+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 const pvTeam=short=>(D?.teams||[]).find(t=>t.team===short)||{};
-const pvLegacyPlayer=p=>p?.photo_code?`https://resources.premierleague.com/premierleague/photos/players/250x250/p${encodeURIComponent(p.photo_code)}.png`:"";
+const pvLegacyPlayer=p=>window.FPLVortexImages?.primaryUrl(p)||(p?.photo_code?`https://resources.premierleague.com/premierleague/photos/players/250x250/p${encodeURIComponent(p.photo_code)}.png`:"");
 const pvCurrentPlayer=p=>p?.photo_code?`https://resources.premierleague.com/premierleague25/photos/players/250x250/${encodeURIComponent(p.photo_code)}.png`:"";
 const pvLegacyBadge=t=>t?.code?`https://resources.premierleague.com/premierleague/badges/100/t${encodeURIComponent(t.code)}.png`:"";
 function pvPhoto(p,cls=""){

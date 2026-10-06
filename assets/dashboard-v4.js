@@ -6,14 +6,7 @@ const N=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const E=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const initials=name=>String(name||'?').split(/[\s.-]+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 function photoUrls(p){
-  const code=String(p?.photo_code||'').replace(/\.(jpg|png)$/i,'');
-  if(!code)return[];
-  return [
-    `https://resources.premierleague.com/premierleague25/photos/players/500x500/${encodeURIComponent(code)}.png`,
-    `https://resources.premierleague.com/premierleague25/photos/players/250x250/${encodeURIComponent(code)}.png`,
-    `https://resources.premierleague.com/premierleague25/photos/players/110x140/${encodeURIComponent(code)}.png`,
-    `https://resources.premierleague.com/premierleague/photos/players/250x250/p${encodeURIComponent(code)}.png`
-  ];
+  return window.FPLVortexImages?.urls(p?.photo_code)||[];
 }
 function playerImg(p){
   const u=photoUrls(p),fallback=E(initials(p?.name));

@@ -36,6 +36,7 @@
 <link rel="stylesheet" href="assets/expected-minutes.css">
 <link rel="stylesheet" href="assets/dashboard-v4.css">
 <link rel="stylesheet" href="assets/my-team-planner.css">
+<link rel="stylesheet" href="assets/player-images.css">
 <!-- Expected Minutes -->
 </head>
 <body>
@@ -77,7 +78,7 @@ const pAt=(p,gw)=>n((p?.projections||[]).find(x=>n(x.gw)===n(gw))?.xpts);
 const gws=()=>[...(D?.events||[])].map(x=>n(x.gw)).filter(Boolean).slice(0,5);
 const initials=name=>String(name||"?").split(/[\s.-]+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 const teamObj=short=>(D?.teams||[]).find(t=>t.team===short)||{};
-const playerPhoto=p=>p?.photo_code?`https://resources.premierleague.com/premierleague/photos/players/250x250/p${encodeURIComponent(p.photo_code)}.png`:"";
+const playerPhoto=p=>window.FPLVortexImages?.primaryUrl(p)||(p?.photo_code?`https://resources.premierleague.com/premierleague/photos/players/250x250/p${encodeURIComponent(p.photo_code)}.png`:"");
 const badgeUrl=team=>{const t=typeof team==="string"?teamObj(team):team;return t?.code?`https://resources.premierleague.com/premierleague/badges/100/t${encodeURIComponent(t.code)}.png`:""};
 const imageFallback=`onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"`;
 const avatar=p=>`<span class="avatar">${playerPhoto(p)?`<img src="${playerPhoto(p)}" alt="${e(p?.name||'Player')}" loading="lazy" ${imageFallback}>`:''}<span class="avatar-fallback" style="${playerPhoto(p)?'display:none':'display:grid'}">${e(initials(p?.name))}</span></span>`;
@@ -137,6 +138,7 @@ function render(){if(!D)return;$('tabs').innerHTML=TABS.map(([k,l,icon,badge])=>
 async function load(){try{const r=await fetch(`data.json?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);D=await r.json();$('footerUpdated').textContent=`Updated ${D.generated||'unknown'}`;const age=Date.now()-new Date(D.generated_iso).getTime();if(age>36*36e5)$('notice').innerHTML=`<div class="notice">Dataset is older than 36 hours. Last-known-good data is preserved automatically; check the latest data refresh if this persists.</div>`;render()}catch(err){$('view').innerHTML=`<div class="empty"><b>Could not load data.json.</b><br><br>${e(err.message||'Unknown error')}</div>`}}
 load();
 </script>
+<script src="assets/player-images.js"></script>
 <script src="assets/dashboard-premium.js"></script>
 <script src="assets/expected-minutes.js"></script>
 <script src="assets/dashboard-v4.js"></script>
