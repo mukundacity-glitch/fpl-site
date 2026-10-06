@@ -1,0 +1,62 @@
+name: Install My Team transfer planner
+
+on:
+  push:
+    branches: [fpl-vortex-review]
+    paths:
+      - ".github/workflows/install-my-team-planner.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fpl-vortex-review
+      - name: Install planner assets and full player pool
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          css='<link rel="stylesheet" href="assets/my-team-planner.css">'
+          js='<script src="assets/my-team-planner.js"></script>'
+          if css not in s:
+              s=s.replace('<link rel="stylesheet" href="assets/dashboard-v4.css">','<link rel="stylesheet" href="assets/dashboard-v4.css">\n'+css)
+          if js not in s:
+              s=s.replace('<script src="assets/dashboard-v4.js"></script>','<script src="assets/dashboard-v4.js"></script>\n'+js)
+          p.write_text(s,encoding='utf-8')
+
+          b=Path('scripts/build_data_json.py')
+          t=b.read_text(encoding='utf-8')
+          t=t.replace('        if num(element.get("minutes")) <= 0 and num(element.get("ep_next")) <= 0:\n            continue\n','')
+          b.write_text(t,encoding='utf-8')
+
+          v=Path('scripts/validate_frontend.py')
+          x=v.read_text(encoding='utf-8')
+          marker='assets/my-team-planner.js'
+          if marker not in x:
+              x=x.replace('"assets/fpl-vortex-logo.jpg",','"assets/fpl-vortex-logo.jpg",\n    "assets/my-team-planner.js",\n    "My Team",')
+          v.write_text(x,encoding='utf-8')
+          PY
+      - name: Validate planner
+        run: |
+          node --check assets/my-team-planner.js
+          python3 scripts/validate_frontend.py
+          python3 -m py_compile scripts/build_data_json.py scripts/review_server.py
+      - name: Commit install
+        run: |
+          set -euo pipefail
+          rm .github/workflows/install-my-team-planner.yml
+          git config user.name "FPL Vortex Design Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html scripts/build_data_json.py scripts/validate_frontend.py .github/workflows/install-my-team-planner.yml
+          if git diff --staged --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "feat: interactive My Team transfer planner and full player pool"
+          git push
